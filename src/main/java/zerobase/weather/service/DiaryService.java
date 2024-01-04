@@ -1,10 +1,13 @@
 package zerobase.weather.service;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import zerobase.weather.domain.Diary;
+import zerobase.weather.repository.DiaryRepository;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -20,6 +23,12 @@ public class DiaryService {
     @Value("${openweathermap.key}")
     private String apiKey;
 
+    private final DiaryRepository diaryRepository;
+
+    public DiaryService(DiaryRepository diaryRepository) {
+        this.diaryRepository = diaryRepository;
+    }
+
     public void createDiary(LocalDate date, String text) {
         // open weather map에서 날씨 데이터 가져오기
         String weatherData = getWeatherString();
@@ -28,6 +37,14 @@ public class DiaryService {
         Map<String, Object> parseWeather = parseWeather(weatherData);
 
         // 파싱된 데이터 + 일기 값 우리 db에 넣기
+        Diary nowdiary = new Diary();
+        nowdiary.setWeather(parseWeather.get("main").toString());
+        nowdiary.setIcon(parseWeather.get("icon").toString());
+        nowdiary.setTemperature((Double) parseWeather.get("temp"));
+        nowdiary.setText(text);
+        nowdiary.setDate(date);
+
+        diaryRepository.save(nowdiary);
 
     }
 
@@ -76,9 +93,10 @@ public class DiaryService {
 
         JSONObject mainData = (JSONObject)jsonObject.get("main");
         resultMap.put("temp", mainData.get("temp"));
-        JSONObject weatherData = (JSONObject) jsonObject.get("weather");
-        resultMap.put("main", mainData.get("main"));
-        resultMap.put("icon", mainData.get("icon"));
+        JSONArray weatherArray = (JSONArray) jsonObject.get("weather");
+        JSONObject weatherData = (JSONObject) weatherArray.get(0);
+        resultMap.put("main", weatherData.get("main"));
+        resultMap.put("icon", weatherData.get("icon"));
 
         return resultMap;
     }

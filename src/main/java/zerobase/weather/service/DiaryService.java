@@ -25,13 +25,15 @@ public class DiaryService {
         String weatherData = getWeatherString();
 
         // 받아온 날씨 json 파싱하기
+        Map<String, Object> parseWeather = parseWeather(weatherData);
 
         // 파싱된 데이터 + 일기 값 우리 db에 넣기
 
     }
 
     private String getWeatherString() {
-        String apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid=" + apiKey;
+        String apiUrl = "https://api.openweathermap.org/data/2.5/weather?q=seoul&appid="
+                + apiKey;
 
         try {
             URL url = new URL(apiUrl);

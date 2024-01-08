@@ -17,7 +17,7 @@ public class SwaggerConfig {
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.any())
+                .apis(RequestHandlerSelectors.basePackage("zerobase.weather"))
                 .paths(PathSelectors.any())
                 .build().apiInfo(apiInfo());
     }
@@ -25,9 +25,9 @@ public class SwaggerConfig {
     private ApiInfo apiInfo() {
         String description = "Welcome Log Company";
         return new ApiInfoBuilder()
-                .title("SWAGGER TEST")
-                .description(description)
-                .version("1.0")
+                .title("날씨 일기 프로젝트:)")
+                .description("날씨 일기를 CRUD 할 수 있는 백엔드 API입니다.")
+                .version("2.0")
                 .build();
     }
 }
